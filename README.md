@@ -1,2 +1,36 @@
 # SYNTH_CONTROL_DATA
 Repositorio para almacenar todos los archivos creados de la data recaudada para el control sintético.
+
+CÓDIGO:
+INFO_OFI <- read_xlsx("C:/Users/alvareoa/Desktop/TAREAS UPSA/MATERIAL DE TESIS/RStudio/(OFICIAL)TOTAL 51 PAÍSES.xlsx",sheet = "OFICI") %>% 
+  as.data.frame(.)
+
+dataprep_out <- dataprep(
+  foo = INFO_OFI,
+  predictors = c( "GDP","GDPAGR","CF","GDEBT","CAGDP","PriceConv","InfR","IntR","DomCred","PPP","Imp (%GDP)","REGIME"),    #Predictores
+  predictors.op = "mean",
+  special.predictors = list(
+    list("OfiExchanR", 1998:2012, "mean" )
+   ),
+  time.predictors.prior = 1998:2012,          #Tiempo establecido en donde crear los predictores.
+  dependent = "GDP",         #Variable dependiente
+  unit.variable = "ID",   #Columna de donde están los grupos donantes y unidad de control.
+  unit.names.variable = "PAIS", #Columna donde están los nombres del grupo de donantes y unidad de control.
+  time.variable = "AÑO", #De donde se consiguen los predictores en tiempo.
+  treatment.identifier = 1,  #Aquí se le está diciendo cuál es la unidad tratada. Los grupos de donantes deben estar identificados con números.
+  controls.identifier = c(2:51),  #En esta se identifican por el ID de cada país. Bolivia es el 1
+  time.optimize.ssr = 1998:2011,   #Período de tiempo para crear el control sintético. Criterio de minimización.
+  time.plot = 1998:2021  #Total de tiempo pre y post tratamiento.
+)
+
+synth_out <- synth(data.prep.obj = dataprep_out)
+
+path.plot(synth_out,dataprep_out)
+
+gaps.plot(synth_out, dataprep_out)
+
+
+
+#synth_out$solution.w
+#synth_out$solution.v
+
